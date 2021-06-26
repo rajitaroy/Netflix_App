@@ -1,9 +1,0 @@
-# Run these in prompt or terminal
-
-pip install streamlit
-streamlit hello
-
-# Create a script and name it 'app.py'
-
-# To run the code and see the framework changes
-streamlit run app.py
