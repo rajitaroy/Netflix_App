@@ -1,2 +1,4 @@
-A streamlit dashboard to see various data visualizations for Netflix TV Shows and Movies- a Kaggle dataset.  
-Also hosted on heroku: https://netflix-dashboard-app.herokuapp.com/
+To run the code on Windows, open cmd and run the following commands:  
+`cd Netflix_App`  
+`pip install -r requirements.txt`  
+`streamlit run app.py`  
