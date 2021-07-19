@@ -64,10 +64,24 @@ top_10_show = df_shows[['show_name','title']].groupby(by='show_name').sum().sort
 df_rating = df[['show_name','rating','title']].groupby(by=['rating','show_name']).count().reset_index()
 top_10_rating = df_rating[['show_name','rating']].groupby(by='show_name').sum().sort_values(by='rating',ascending=False).reset_index()['show_name'].head(10)
 
-# Creating a dataframe of only Movies
+# Creating a dataframe of only Movies and grouping it by 'rating_ages'
 df_plot = df[df['type'] == 'Movie']
+df_x = df_plot.groupby(by=["rating_ages"]).size().reset_index(name="counts")
+
+# Creating a dataframe grouped by 'listed_in' along with its count
+df_y = df.groupby(by=["listed_in"]).size().reset_index(name="counts")
 
 # Streamlit application begins
+st.markdown("""
+<style>
+body{
+        color: #900C3F;
+        background-color: #C0C0C0;
+    }
+</style>
+     """, unsafe_allow_html=True)
+
+
 st.title("Netflix TV Shows and Movies Analysis: ")
 st.sidebar.title("Netflix Analysis 2020:")
 st.markdown("This application is a Netflix Analysis dashboard:")
@@ -79,7 +93,13 @@ select = st.sidebar.selectbox('Table/Analysis', ['Dataset','TV Shows', 'Movies']
 if not st.sidebar.checkbox('Hide', True, key = '1'):
     if select == 'Dataset':
         st.title('Netflix TV Shows and Movies Dataframe:')
-        st.markdown('This is the entire table:')
+        st.markdown('''This dataset consists of tv shows and movies available on Netflix as of 2019. 
+        The dataset is collected from Flixable which is a third-party Netflix search engine. 
+        In 2018, they released an interesting report which shows that the number of TV shows on Netflix 
+        has nearly tripled since 2010. The streaming service’s number of movies has decreased 
+        by more than 2,000 titles since 2010, while its number of TV shows has nearly tripled. 
+        It will be interesting to explore what all other insights can be obtained from the same dataset.''')
+    
         st.dataframe(df)
 
     elif select == 'TV Shows':
@@ -104,29 +124,12 @@ if not st.sidebar.checkbox('Hide', True, key = '1'):
     elif select == 'Movies':
         st.title('Graphical analysis for Movies:')
         st.markdown('Visualising movies watched by different Age Groups:')
-        fig1 = plt.figure(figsize=(30,15))
-        plt.style.use('dark_background')
-        cp_rating = sns.countplot(x = 'rating_ages', data = df_plot)
-        plt.xlabel('Ratings',fontsize = 30)
-        plt.ylabel('Count', fontsize = 30)
-        for p in cp_rating.patches:
-            cp_rating.annotate(str(p.get_height()), 
-            xy=(p.get_x() + p.get_width() / 2, p.get_height()),
-            ha='center', va='bottom', fontsize = 25)
-        plt.grid(linestyle = '-.')
-        st.pyplot(fig1)
+        bar1 = px.bar(data_frame=df_x, x="rating_ages", y="counts", color="rating_ages", 
+        barmode="group", template = 'plotly_dark')
+        st.plotly_chart(bar1)
 
         st.markdown('Visualising movies based on category:')
-        fig2 = plt.figure(figsize=(10,25))
-        plt.style.use('dark_background')
-        cp_standup = sns.countplot(y = 'listed_in', data = df)
-        plt.xlabel('Count',fontsize = 20)
-        plt.ylabel('Category', fontsize = 20)
-        for p in cp_standup.patches:
-            width = p.get_width()
-            plt.text(5+p.get_width(), p.get_y()+0.55*p.get_height(),
-            '{:1.2f}'.format(width),ha='left',va='center')
-        st.pyplot(fig2)
-        
+        bar2 = px.line(data_frame=df_y, x="listed_in", y="counts",template = 'plotly_dark', height = 700)
+        st.plotly_chart(bar2)        
     
 
