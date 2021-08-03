@@ -1,4 +1,4 @@
-To run the code on Windows, open cmd and run the following commands:  
+## Steps to run:  
 `cd Netflix_App`  
 
 `pip install -r requirements.txt`  
